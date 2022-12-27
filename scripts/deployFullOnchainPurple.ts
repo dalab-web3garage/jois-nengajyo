@@ -17,8 +17,6 @@ const main = async () => {
   };
 
   const image = await readFileSync("./images/3_purple.svg")
-  const _contractUri = "https://bafkreifrwpzkxgezb7schrl5ql5ei2tdzindj4ozatugcaipw6cwribbym.ipfs.w3s.link/?filename=metadata-nengajyo-purple.json"
-  await badgeContract.setContractURI(_contractUri)
   await badgeContract.createOnChainItem(
     purple.mintable,
     purple.transferable,
@@ -28,6 +26,9 @@ const main = async () => {
     purple.description,
     image.toString()
   )
+
+  const _contractUri = "https://bafkreifrwpzkxgezb7schrl5ql5ei2tdzindj4ozatugcaipw6cwribbym.ipfs.w3s.link/?filename=metadata-nengajyo-purple.json"
+  await badgeContract.setContractURI(_contractUri)
 }
 
 main().catch((error) => {
