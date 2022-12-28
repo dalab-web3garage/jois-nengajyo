@@ -2,6 +2,10 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { Contract } from "ethers";
 import { ethers } from "hardhat";
+import { readFileSync } from 'fs'
+import chai from 'chai';
+import chaiString from 'chai-string'
+chai.use(chaiString);
 
 describe("JoisNengajyo", function () {
   let badgeContract: Contract,
@@ -14,6 +18,64 @@ describe("JoisNengajyo", function () {
     const ItemContract = await ethers.getContractFactory("JoisNengajyo");
     badgeContract = await ItemContract.deploy();
     await badgeContract.deployed();
+  });
+
+  describe("ccreateOnChainItem", () => {
+    it("creates items", async () => {
+      const badgeArgs = {
+        title: 'this is the title',
+        description: 'foobar',
+        mintable: true,
+        transferable: false,
+        maxSupply: 10,
+        tokenURI: "https://example.com",
+        maxMintPerWallet: 0,
+      };
+
+      const image = await readFileSync("./images/3_purple.svg")
+      await expect(
+        badgeContract.createOnChainItem(
+          badgeArgs.mintable,
+          badgeArgs.transferable,
+          badgeArgs.maxSupply,
+          badgeArgs.maxMintPerWallet,
+          badgeArgs.title,
+          badgeArgs.description,
+          image.toString()
+        )).to.emit(badgeContract, "NewItem")
+        .withArgs(1, badgeArgs.mintable);
+      const item = await badgeContract.items(1);
+      expect(item.mintable).to.eq(badgeArgs.mintable);
+      expect(item.transferable).to.eq(badgeArgs.transferable);
+      expect(item.tokenURI).to.startWith('data:application/json;base64,')
+      expect(item.maxSupply).to.eq(badgeArgs.maxSupply);
+    });
+
+    it("reverts with none owner", async () => {
+      const badgeArgs = {
+        title: 'this is the title',
+        description: 'foobar',
+        mintable: true,
+        transferable: false,
+        maxSupply: 10,
+        tokenURI: "https://example.com",
+        maxMintPerWallet: 0,
+      };
+
+      const image = await readFileSync("./images/3_purple.svg")
+      await expect(
+        badgeContract.connect(alice).createOnChainItem(
+          badgeArgs.mintable,
+          badgeArgs.transferable,
+          badgeArgs.maxSupply,
+          badgeArgs.maxMintPerWallet,
+          badgeArgs.title,
+          badgeArgs.description,
+          image.toString()
+        )
+      ).to.be
+        .reverted;
+    });
   });
 
   describe("createItem", () => {
