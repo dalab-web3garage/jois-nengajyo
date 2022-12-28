@@ -177,6 +177,7 @@ contract JoisNengajyo is ERC1155, Ownable {
 
     function mintTo(address _to, uint256 _tokenId)
         public
+        onlyOwner
         onlyExistItem(_tokenId)
         notExceedMaxSupply(_tokenId)
         onlyBelowMaxMintPerWallet(_to, _tokenId)
