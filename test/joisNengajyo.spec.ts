@@ -83,6 +83,17 @@ describe("JoisNengajyo", function () {
       expect(item.maxSupply).to.eq(10);
     });
 
+    it("updates only mintable", async () => {
+      await expect(
+        badgeContract.updateItemAttr(1, false, "0")
+      ).to.emit(badgeContract, "UpdateItem");
+      const item = await badgeContract.items(1);
+      expect(item.mintable).to.eq(false);
+      expect(item.transferable).to.eq(false);
+      expect(item.tokenURI).to.eq("https://example.com");
+      expect(item.maxSupply).to.eq(10);
+    });
+
     it("reverts with non existed item", async () => {
       await expect(
         badgeContract.updateItemAttr(0, false, "https//hoge.com")
