@@ -37,7 +37,7 @@ export default {
     },
     goerli: {
       url: process.env.GOERLI_KEY || '',
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [process.env.PRIVATE_KEY_PREV],
     },
     polygon: {
       chainId: 137,
