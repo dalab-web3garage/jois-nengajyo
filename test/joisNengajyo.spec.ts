@@ -398,11 +398,9 @@ describe("JoisNengajyo", function () {
       expect(await badgeContract.balanceOf(alice.address, 1)).to.be.eq(1);
     });
 
-    it("everyone can mint to another", async () => {
-      expect(await badgeContract.connect(bob).mintTo(alice.address, 1))
-        .to.emit(badgeContract, "MintTo")
-        .withArgs(bob.address, alice.address, 1);
-      expect(await badgeContract.balanceOf(alice.address, 1)).to.be.eq(1);
+    it("revert if non-owner try to mint", async () => {
+      await expect(badgeContract.connect(bob).mintTo(alice.address, 1)).to.reverted
+      expect(await badgeContract.balanceOf(alice.address, 1)).to.be.eq(0);
     });
 
     it("reverts with non existed item", async () => {
